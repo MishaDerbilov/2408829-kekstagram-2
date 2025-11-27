@@ -123,10 +123,18 @@ CANCEL_BUTTON.addEventListener('click', () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 });
 
-const showSuccessMessage = () => {
+const createSuccessMessage = () => {
   const template = document.querySelector('#success').content.querySelector('.success');
-  const element = template.cloneNode(true);
-  const button = element.querySelector('.success__button');
+  return template.cloneNode(true);
+};
+
+const createErrorMessage = () => {
+  const template = document.querySelector('#error').content.querySelector('.error');
+  return template.cloneNode(true);
+};
+
+function attachMessageHandlers(element, innerSelector, buttonSelector) {
+  const button = element.querySelector(buttonSelector);
 
   function close() {
     element.remove();
@@ -142,7 +150,7 @@ const showSuccessMessage = () => {
   }
 
   function onClickOutside(evt) {
-    if (!evt.target.closest('.success__inner')) {
+    if (!evt.target.closest(innerSelector)) {
       close();
     }
   }
@@ -154,39 +162,16 @@ const showSuccessMessage = () => {
   document.body.append(element);
   document.addEventListener('keydown', onEsc);
   document.addEventListener('click', onClickOutside);
+}
+
+const showSuccessMessage = () => {
+  const element = createSuccessMessage();
+  attachMessageHandlers(element, '.success__inner', '.success__button');
 };
 
 const showErrorMessage = () => {
-  const template = document.querySelector('#error').content.querySelector('.error');
-  const element = template.cloneNode(true);
-  const button = element.querySelector('.error__button');
-
-  function close() {
-    element.remove();
-    document.removeEventListener('keydown', onEsc);
-    document.removeEventListener('click', onClickOutside);
-  }
-
-  function onEsc(evt) {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      close();
-    }
-  }
-
-  function onClickOutside(evt) {
-    if (!evt.target.closest('.error__inner')) {
-      close();
-    }
-  }
-
-  button.addEventListener('click', () => {
-    close();
-  });
-
-  document.body.append(element);
-  document.addEventListener('keydown', onEsc);
-  document.addEventListener('click', onClickOutside);
+  const element = createErrorMessage();
+  attachMessageHandlers(element, '.error__inner', '.error__button');
 };
 
 FORM.addEventListener('submit', (evt) => {
